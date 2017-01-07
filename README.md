@@ -1,6 +1,6 @@
 #About react in the application of entrance and isomorphism solutions.
 
-[中文文档]()
+[中文文档](https://github.com/Mrlyjoutlook/react-isomorphic/tree/master/doc/cn)
 
 ##Overview
 
