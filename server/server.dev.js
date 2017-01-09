@@ -73,13 +73,13 @@ app.use(hotMiddleware(compiler,{log: console.log}));
 
 app.get('/*',require('./routes/page'));
 
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-});
+// app.use(function(err, req, res, next) {
+//     res.status(err.status || 500);
+//     res.render('error', {
+//       message: err.message,
+//       error: err
+//     });
+// });
 
 app.set('port', port);
 const server = http.createServer(app);

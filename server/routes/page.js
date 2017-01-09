@@ -9,10 +9,10 @@ const getRoutes=require('../../client/views');
 module.exports = function (req, res, next) {
   
   //构建出内存中历史记录
-  const memoryHistory = createMemoryHistory(req.originalUrl);
+  // const memoryHistory = createMemoryHistory(req.originalUrl);
   
   //匹配客户端路由 history:memoryHistory,
-  match({ history:memoryHistory, routes: getRoutes, location: req.originalUrl}, (error, redirectLocation, renderProps) => {
+  match({ routes: getRoutes, location: req.originalUrl}, (error, redirectLocation, renderProps) => {
     //服务端构建出Store
     const store = configureStore();
 

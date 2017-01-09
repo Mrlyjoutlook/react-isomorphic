@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon ./server/server.dev.js --watch server --watch build",
-    "dist": "npm run clean && cross-env NODE_ENV=production webpack --config ./build/webpack.prod.config.js --progress",
-    "clean": "rimraf ./dist/client/* && rimraf ./dist/server/* && rimraf ./views/prod/*"
+    "dist": "npm run clean && cross-env NODE_ENV=production webpack -p --config ./build/webpack.prod.config.js --progress",
+    "clean": "rimraf ./dist/client/* && rimraf ./dist/server/* && rimraf ./views/prod/*",
+    "start": "node ./dist/server/server.js",
+    "pm2":"pm2 start ./dist/server/server.js -i 0",
+    "lint":"eslint ./client"
   },
   "keywords": [
     "react",

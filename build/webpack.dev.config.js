@@ -2,12 +2,12 @@ const path = require('path'),
       webpack = require('webpack'),
       HtmlWebpackPlugin = require('html-webpack-plugin'),
       ProgressBarPlugin = require('progress-bar-webpack-plugin'),
-      defaultSettings = require('./default');
+      defaultSettings = require('./default'),
+      baseConfig = require('./base');
 
-let config={
-    devtool: 'eval-source-map',
-    context: path.resolve(__dirname, '..'),
-    performance: { hints: false },  // webpack2 log关闭警告
+let config=Object.assign({}, baseConfig, {
+    devtool: 'cheap-module-eval-source-map',//这个工具会帮助开发环境下在Chrome/Firefox中显示源代码文件，其速度快于source-map与eval-source-map
+    cache:true,
     entry: {
         main: [
             'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
@@ -22,41 +22,8 @@ let config={
             'react-redux'
         ]
     },
-    output: {
-        path: path.resolve(__dirname, '../dist/client'),
-        filename: '[name].js',
-        chunkFilename: 'chunk.[name].js',
-        publicPath: '/'
-    },
-    module:defaultSettings.getDefaultModules(),
-    resolve: {
-        extensions: ['*', '.js', '.jsx']
-    },
-    plugins: [
-        // new webpack.optimize.OccurenceOrderPlugin(), //webpack2 默认内置
-        // new webpack.optimize.DedupePlugin(), //webpack2 默认内置
-        new webpack.optimize.CommonsChunkPlugin({
-            names: ['vendor'],
-            filename: 'common.[name].js'
-        }),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin(),
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-        }),
-        new HtmlWebpackPlugin({
-            filename: '../views/dev/index.html',
-            template: './views/tpl/index.tpl.html'
-        }),
-        new ProgressBarPlugin({summary: false})
-    ]
-    // postcss: function () {
-    //     return [
-    //         require('autoprefixer')({browsers: ['last 2 versions']}),
-    //         // require('postcss-px2rem')({remUnit: 37.5})  //手淘rem适配方案
-    //     ];
-    // }
-}
+    module:defaultSettings.getDefaultModules()
+})
 
 config.module.loaders.push({
     test: /\.(js|jsx)$/,
@@ -66,9 +33,24 @@ config.module.loaders.push({
         [ path.join(__dirname, '../client') ]
     ),
     query: {
+        cacheDirectory: true,
         presets: ['es2015', 'react', 'stage-0', 'react-hmre'],
-        plugins: ['transform-runtime', 'add-module-exports']
+        plugins: ['transform-runtime','add-module-exports']
     }
 })
+
+config.plugins.push(
+    new webpack.optimize.CommonsChunkPlugin({
+        names: ['vendor'],
+        filename: 'common.[name].js'
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new HtmlWebpackPlugin({
+        filename: '../views/dev/index.html',
+        template: './views/tpl/index.tpl.html'
+    }),
+    new ProgressBarPlugin({summary: false})
+)
 
 module.exports = config;

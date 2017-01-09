@@ -1,26 +1,49 @@
 'use strict';
 
-const path = require('path');
-const srcPath = path.join(__dirname, '/../src');
-const dfltPort = 8000;
+const path = require('path'),
+      srcPath = path.join(__dirname, '/../client'),
+      ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+// 目前只针对.css做处理。
+function getCssEnvConf(env){
+  if(env === 'production'){
+    return [
+      {
+        test: /\.css$/,
+        include: path.join(srcPath, 'styles'),
+        loader: ExtractTextPlugin.extract({
+          fallbackLoader: 'style-loader',
+          loader: [
+            { loader: 'css-loader', query: { modules: true,importLoaders:1,localIdentName:'[name]__[local]__[hash:base64:5]',sourceMaps: true } },
+            'postcss-loader'
+          ]
+        })
+      }
+    ]
+  }else{
+    return [
+      {
+        test: /\.css$/,
+        include: path.join(srcPath, 'styles'),
+        loaders: [
+          {loader:'style-loader'},
+          {loader:'css-loader',query: { modules: true,importLoaders:1,localIdentName:'[name]__[local]__[hash:base64:5]',sourceMaps: true }},
+          {loader:'postcss-loader'}
+        ]
+      }
+    ]
+  }
+}
 
 function getDefaultModules() {
   return {
-    // preLoaders: [
-    //   {
-    //     test: /\.(js|jsx)$/,
-    //     include: srcPath,
-    //     loader: 'eslint-loader'
-    //   }
-    // ],
     loaders: [
       {
-        test: /\.css$/,
-        loaders:[
-          {loader:'style-loader'},
-          {loader:'css-loader', query: {modules: true,importLoaders:1,localIdentName:'[name]__[local]__[hash:base64:5]'} },
-          // {loader:'postcss-loader'}
-        ]
+        test: /\.(js|jsx)$/,
+        loader: 'eslint-loader',
+        exclude: /node_modules/,
+        include: srcPath,
+        enforce: 'pre'  //webpack2 preLoaders配置移植到这里
       },
       {
         test: /\.sass$/,
@@ -32,7 +55,11 @@ function getDefaultModules() {
       },
       {
         test: /\.scss/,
-        loader: 'style-loader!css-loader!sass-loader?outputStyle=expanded'
+        loaders: [
+          {loader:'style-loader'},
+          {loader:'css-loader'},
+          {loader:'sass-loader',query:{outputStyle:'expanded'}}
+        ]
       },
       {
         test: /\.less/,
@@ -43,7 +70,7 @@ function getDefaultModules() {
         loader: 'style-loader!css-loader!stylus-loader'
       },
       {
-        test: /\.(png|jpg|gif|woff|woff2)$/,
+        test: /\.(png|jpg|gif|webp|woff|woff2)$/,
         loader: 'url-loader?limit=8192'
       },
       {
@@ -58,14 +85,13 @@ function getDefaultModules() {
         test: /\.html$/,
         loader: 'html-loader?minimize=false'
       }
-    ]
+    ].concat(getCssEnvConf(process.env.NODE_ENV))
   };
 }
 
 module.exports = {
   srcPath: srcPath,
   publicPath: '/assets/',
-  port: dfltPort,
   getDefaultModules: getDefaultModules,
   additionalPaths:[]
 };

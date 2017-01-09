@@ -1,23 +1,15 @@
 const path = require('path'),
-    fs = require('fs'),
-    webpack = require('webpack'),
-    autoprefixer = require('autoprefixer'),
-    HtmlWebpackPlugin = require('html-webpack-plugin'),
-    ExtractTextPlugin = require('extract-text-webpack-plugin')
-let clientConfig, serverConfig
+    //   fs = require('fs'),
+      webpack = require('webpack'),
+      defaultSettings = require('./default'),
+      baseConfig = require('./base'),
+      HtmlWebpackPlugin = require('html-webpack-plugin'),
+      ExtractTextPlugin = require('extract-text-webpack-plugin');
+let clientConfig, serverConfig;
 
-function getExternals() {
-    return fs.readdirSync(path.resolve(__dirname, '../node_modules'))
-        .filter(filename => !filename.includes('.bin'))
-        .reduce((externals, filename) => {
-            externals[filename] = `commonjs ${filename}`
-
-            return externals
-        }, {})
-}
-
-clientConfig = {
-    context: path.resolve(__dirname, '..'),
+clientConfig = Object.assign({}, baseConfig, {
+    // devtool:'hidden-source-map',
+    cache:false,
     entry: {
         bundle: './client',
         vendor: [
@@ -27,59 +19,39 @@ clientConfig = {
             'react-redux'
         ]
     },
-    output: {
-        path: path.resolve(__dirname, '../dist/client'),
-        filename: '[name].[chunkhash:8].js',
-        chunkFilename: 'chunk.[name].[chunkhash:8].js',
-        publicPath: '/'
-    },
-    module: {
-        loaders: [{
-            test: /\.js$/,
-            exclude: /(node_modules)/,
-            loader: 'babel-loader',
-            query: {
-                presets: ['es2015', 'react', 'stage-0'],
-                plugins: ['transform-runtime', 'add-module-exports']
-            }
-        },
-        //  {
-        //     test: /\.scss$/,
-        //     loader: ExtractTextPlugin.extract('style', 'css?modules&camelCase&importLoaders=1&localIdentName=[hash:base64:8]!postcss!sass')
-        // }, 
-        {
-            test: /\.(jpg|png|gif|webp)$/,
-            loader: 'url-loader?limit=8000'
-        }, {
-            test: /\.json$/,
-            loader: 'json-loader'
-        }, {
-            test: /\.html$/,
-            loader: 'html-loader?minimize=false'
-        }]
-    },
-    // postcss: [autoprefixer({browsers: ['> 5%']})],
-    resolve: {extensions: ['*', '.js', '.json', '.scss']},
-    plugins: [
-        // new webpack.optimize.OccurrenceOrderPlugin(),
-        // new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.CommonsChunkPlugin({
-            names: ['vendor', 'manifest'],
-            filename: '[name].[chunkhash:8].js'
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {warnings: false},
-            comments: false
-        }),
-        new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)}),
-        new HtmlWebpackPlugin({
-            filename: '../../views/prod/index.html',
-            template: './views/tpl/index.tpl.html',
-            chunksSortMode: 'none'
-        }),
-        // new ExtractTextPlugin('[name].[contenthash:8].css', {allChunks: true})
-    ]
-}
+    module: defaultSettings.getDefaultModules()
+})
+
+clientConfig.module.loaders.push({
+    test: /\.(js|jsx)$/,
+    loader: 'babel-loader',
+    include: [].concat(
+        defaultSettings.additionalPaths,
+        [ path.join(__dirname, '../client') ]
+    ),
+    query: {
+        cacheDirectory: true,
+        presets: ['es2015', 'react', 'stage-0'],
+        plugins: ['transform-runtime','add-module-exports']
+    }
+})
+
+clientConfig.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+        compress: {warnings: false},
+        comments: false
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+        names: ['vendor'],
+        filename: '[name].[chunkhash:8].js'
+    }),
+    new HtmlWebpackPlugin({
+        filename: '../../views/prod/index.html',
+        template: './views/tpl/index.tpl.html',
+        chunksSortMode: 'none'
+    })
+    // new ExtractTextPlugin('[name].[contenthash:8].css',{allChunks: true})
+)
 
 serverConfig = {
     context: path.resolve(__dirname, '..'),
@@ -94,42 +66,28 @@ serverConfig = {
         __filename: true,
         __dirname: true
     },
-    module: {
-        loaders: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader',
-            query: {
-                presets: ['es2015', 'react', 'stage-0'],
-                plugins: ['add-module-exports']
-            }
-        }, 
-        // {
-        //     test: /\.scss$/,
-        //     loaders: [
-        //         'css/locals?modules&camelCase&importLoaders=1&localIdentName=[hash:base64:8]',
-        //         'sass'
-        //     ]
-        // },
-         {
-            test: /\.(jpg|png|gif|webp)$/,
-            loader: 'url-loader?limit=8000'
-        }, {
-            test: /\.json$/,
-            loader: 'json-loader'
-        }]
-    },
-    // externals: getExternals(),
-    resolve: {extensions: ['*', '.js', '.json', '.scss']},
+    module: defaultSettings.getDefaultModules(),
+    resolve: {extensions: ['*', '.js', '.jsx', 'es6', '.json', 'css', 'scss']},
     plugins: [
-        // new webpack.optimize.OccurrenceOrderPlugin(),
-        // new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({
             compress: {warnings: false},
             comments: false
         }),
-        new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)})
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+        })
     ]
 }
+
+serverConfig.module.loaders.push({
+    test: /\.(js|jsx)$/,
+    loader: 'babel-loader',
+    exclude: /(node_modules)/,
+    query: {
+        cacheDirectory: true,
+        presets: ['es2015', 'react', 'stage-0'],
+        plugins: ['add-module-exports']
+    }
+})
 
 module.exports = [clientConfig, serverConfig]

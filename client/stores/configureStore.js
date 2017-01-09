@@ -8,7 +8,7 @@ export default function configureStore(history, initialState) {
       applyMiddleware(
         thunk
       ),
-      window.devToolsExtension ? window.devToolsExtension() : f=>f
+      // window.devToolsExtension ? window.devToolsExtension() : f=>f
   )(createStore);
   
   const store = createStoreWithMiddleware(rootReducer, initialState);
