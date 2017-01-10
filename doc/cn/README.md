@@ -6,7 +6,7 @@
 - [使用](#Installation)
 
 ##Overview
-该项目是使用Node.js做中间层来做服务端渲染，实现前后端同构。[node做中间层探索和思路(点击阅读)]()。  
+该项目是使用Node.js做中间层来做服务端渲染，实现前后端同构。[node做中间层探索和思路(点击阅读)](https://github.com/Mrlyjoutlook/react-isomorphic/tree/master/doc/node)。  
 
 
 ##Installation
