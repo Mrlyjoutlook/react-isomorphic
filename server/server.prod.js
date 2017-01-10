@@ -10,7 +10,7 @@ const express = require('express'),
 
 const app=express();
 // view engine setup
-app.set('views', path.resolve(__dirname, '../views/prod'));
+app.set('views', path.resolve(__dirname, '../views/build'));
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);  //使用ejs模板引擎渲染html
 

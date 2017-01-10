@@ -1,8 +1,9 @@
 const path = require('path'),
-    //   fs = require('fs'),
+      fs = require('fs'),
       webpack = require('webpack'),
       defaultSettings = require('./default'),
       baseConfig = require('./base'),
+      fileEntryObj = require('./fileEntry'),
       HtmlWebpackPlugin = require('html-webpack-plugin'),
       ExtractTextPlugin = require('extract-text-webpack-plugin');
 let clientConfig, serverConfig;
@@ -10,15 +11,15 @@ let clientConfig, serverConfig;
 clientConfig = Object.assign({}, baseConfig, {
     // devtool:'hidden-source-map',
     cache:false,
-    entry: {
-        bundle: './client',
+    entry: Object.assign({},fileEntryObj,{
+        // bundle: './client',
         vendor: [
             'react',
             'react-dom',
             'redux',
             'react-redux'
         ]
-    },
+    }),
     module: defaultSettings.getDefaultModules()
 })
 
@@ -44,14 +45,21 @@ clientConfig.plugins.push(
     new webpack.optimize.CommonsChunkPlugin({
         names: ['vendor'],
         filename: '[name].[chunkhash:8].js'
-    }),
-    new HtmlWebpackPlugin({
-        filename: '../../views/prod/index.html',
-        template: './views/tpl/index.tpl.html',
-        chunksSortMode: 'none'
     })
     // new ExtractTextPlugin('[name].[contenthash:8].css',{allChunks: true})
 )
+
+//多入口的html
+for(let key in fileEntryObj){
+    clientConfig.plugins.push(
+        new HtmlWebpackPlugin({
+            filename: `../views/build/index.${key}.html`,
+            template: './views/tpl/index.tpl.html',
+            chunksSortMode: 'none',
+            chunks:['vendor',`${key}`]
+        })
+    )
+}
 
 serverConfig = {
     context: path.resolve(__dirname, '..'),

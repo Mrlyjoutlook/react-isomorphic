@@ -10,7 +10,7 @@ module.exports = function (req, res, next) {
   
   //构建出内存中历史记录
   // const memoryHistory = createMemoryHistory(req.originalUrl);
-  
+  console.log(req.originalUrl)
   //匹配客户端路由 history:memoryHistory,
   match({ routes: getRoutes, location: req.originalUrl}, (error, redirectLocation, renderProps) => {
     //服务端构建出Store
@@ -21,7 +21,13 @@ module.exports = function (req, res, next) {
     } else if (redirectLocation) {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search)
     } else if (renderProps) {
-      res.status(200).render('index',{
+
+      const rou={
+        '/':'index.dashboard.html',
+        '/login':'index.login.html'
+      }
+
+      res.status(200).render(rou[req.originalUrl],{
         root:renderToString(
           <Provider store={store}>
             <RouterContext {...renderProps} />
