@@ -12,7 +12,6 @@ clientConfig = Object.assign({}, baseConfig, {
     // devtool:'hidden-source-map',
     cache:false,
     entry: Object.assign({},fileEntryObj,{
-        // bundle: './client',
         vendor: [
             'react',
             'react-dom',
@@ -53,7 +52,7 @@ clientConfig.plugins.push(
 for(let key in fileEntryObj){
     clientConfig.plugins.push(
         new HtmlWebpackPlugin({
-            filename: `../views/build/index.${key}.html`,
+            filename: path.join(__dirname,`../dist/client/index.${key}.html`),
             template: './views/tpl/index.tpl.html',
             chunksSortMode: 'none',
             chunks:['vendor',`${key}`]

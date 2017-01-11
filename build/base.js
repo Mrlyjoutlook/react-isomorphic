@@ -2,7 +2,7 @@ const path = require('path'),
       webpack = require('webpack');
 
 module.exports={
-    context: path.resolve(__dirname, '..'),
+    context: path.resolve(__dirname, '..'),  //设置entry基础目录 
     performance: { hints: false },  // webpack2 log关闭警告
     output: {
         path: path.resolve(__dirname, '../dist/client'),

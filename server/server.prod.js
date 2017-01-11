@@ -10,7 +10,7 @@ const express = require('express'),
 
 const app=express();
 // view engine setup
-app.set('views', path.resolve(__dirname, '../views/build'));
+app.set('views', path.join(__dirname, '../dist/client'));
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);  //使用ejs模板引擎渲染html
 
@@ -18,7 +18,7 @@ app.engine('html', require('ejs').renderFile);  //使用ejs模板引擎渲染htm
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(cookieParser());
-app.use(express.static(path.resolve(__dirname, '../dist/client')));
+app.use(express.static(path.join(__dirname, '../dist/client')));
 
 app.get('/*',require('./routes/page'));
 

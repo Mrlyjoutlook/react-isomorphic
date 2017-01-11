@@ -16,17 +16,12 @@ const path = require('path'),
         ]
      }
      return obj;
- }    
+ }
 
 let config=Object.assign({}, baseConfig, {
     devtool: 'cheap-module-eval-source-map',//这个工具会帮助开发环境下在Chrome/Firefox中显示源代码文件，其速度快于source-map与eval-source-map
     cache:true,
     entry: Object.assign({},entryPath(fileEntryObj),{
-        // dashboard: [
-        //     'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
-        //     'webpack/hot/dev-server',
-        //     path.join(__dirname, '../client/index.dashboard')
-        // ],
         vendor: [
             'react',
             'react-dom',
@@ -58,10 +53,6 @@ config.plugins.push(
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
-    // new HtmlWebpackPlugin({
-    //     filename: '../views/dev/index.html',
-    //     template: './views/tpl/index.tpl.html'
-    // }),
     new ProgressBarPlugin({summary: false})
 )
 
