@@ -1,4 +1,4 @@
-#About react in the application of entrance and isomorphism solutions.
+#About React in multi application portal, server-side rendering, isomorphic solutions.
 
 [中文文档](https://github.com/Mrlyjoutlook/react-isomorphic/tree/master/doc/cn)
 
