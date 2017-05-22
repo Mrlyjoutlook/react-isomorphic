@@ -9,7 +9,7 @@ const path = require('path'),
 let clientConfig, serverConfig;
 
 clientConfig = Object.assign({}, baseConfig, {
-    // devtool:'hidden-source-map',
+    // devtool:'cheap-module-source-map', // hidden-source-map
     cache:false,
     entry: Object.assign({},fileEntryObj,{
         vendor: [
