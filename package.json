@@ -9,6 +9,7 @@
     "clean": "rimraf ./dist/client/* && rimraf ./dist/server/* && rimraf ./views/prod/*",
     "start": "node ./dist/server/server.js",
     "pm2":"pm2 start ./dist/server/server.js -i 0",
+    "stop": "pm2 stop all",
     "lint":"eslint ./client"
   },
   "keywords": [
